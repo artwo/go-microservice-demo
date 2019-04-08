@@ -1,56 +1,87 @@
 package routehandler
 
 import (
-	"net/http"
-
+	"encoding/json"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
+	"log"
+	// "log"
+	"net/http"
 )
 
-type Employee struct {
-	ID string `json:"id"`
-	Title string `json:"title"`
-	Body string `json:"body"`
+type Person struct {
+	ID        string   `json:"id,omitempty"`
+	Firstname string   `json:"firstname,omitempty"`
+	Lastname  string   `json:"lastname,omitempty"`
+	Address   *Address `json:"address,omitempty"`
+}
+
+type PersonReqBody struct {
+	Firstname string   `json:"firstname"`
+	Lastname  string   `json:"lastname"`
+	Address   *Address `json:"address"`
+}
+
+type Address struct {
+	City  string `json:"city,omitempty"`
+	State string `json:"state,omitempty"`
+}
+
+var people []Person
+
+func init() {
+	people = append(people, Person{ID: "1", Firstname: "John", Lastname: "Doe", Address: &Address{City: "City X", State: "State X"}})
+	people = append(people, Person{ID: "2", Firstname: "Koko", Lastname: "Doe", Address: &Address{City: "City Z", State: "State Y"}})
 }
 
 func Routes() *chi.Mux {
 	router := chi.NewRouter()
-	router.Get("/{todoID}", GetATodo)
-	router.Delete("/{todoID}", DeleteTodo)
-	router.Post("/", CreateTodo)
-	router.Get("/", GetAllTodos)
+	router.Get("/{personID}", GetPerson)
+	router.Post("/", CreatePerson)
+	// router.Delete("/{personID}", DeleteTodo)
+	router.Get("/", GetPeople)
 	return router
 }
 
-func GetATodo(w http.ResponseWriter, r *http.Request) {
-	todoID := chi.URLParam(r, "todoID")
-	todos := Employee {
-		ID: todoID,
-		Title: "Hello World",
-		Body: "Hello world from planet earth",
+func GetPeople(w http.ResponseWriter, r *http.Request) {
+	render.JSON(w, r, people)
+}
+
+func GetPerson(w http.ResponseWriter, r *http.Request) {
+	personID := chi.URLParam(r, "personID")
+	for _, item := range people {
+		if item.ID == personID {
+			render.JSON(w, r, item)
+		}
 	}
-	render.JSON(w, r, todos)
+	http.Error(w, "Person not found.", http.StatusNotFound)
 }
 
-func DeleteTodo(w http.ResponseWriter, r *http.Request) {
-	response := make(map[string]string)
-	response["message"] = "Deleted TODO successfully"
-	render.JSON(w, r, response)
-}
-
-func CreateTodo(w http.ResponseWriter, r * http.Request) {
-	response := make(map[string]string)
-	response["message"] = "Created TODO successfully"
-	render.JSON(w, r, response)
-}
-
-func GetAllTodos(w http.ResponseWriter, r *http.Request) {
-	todos := []Employee {
-		{
-			ID: "id",
-			Title: "Hello World",
-			Body: "Hello world from planet earth",
-		},
+func CreatePerson(w http.ResponseWriter, r *http.Request) {
+	var personBody PersonReqBody
+	err := json.NewDecoder(r.Body).Decode(&personBody)
+	if err != nil {
+		//TODO: Pack log and error response in a function
+		log.Printf("Unable to parse CreatePerson request body: %s\n", err.Error())
+		http.Error(w, "Wrong body format or element missing in body.", http.StatusBadRequest)
 	}
-	render.JSON(w, r, todos)
+	newPerson := Person{
+		ID:        "123",
+		Firstname: personBody.Firstname,
+		Lastname:  personBody.Lastname,
+		Address:   personBody.Address,
+	}
+	people = append(people, newPerson)
+	response := make(map[string]string)
+	response["message"] = "Person created successfully"
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(response)
+	//w.Write()
+	//render.JSON(w, r, response)
 }
+
+// func DeleteTodo(w http.ResponseWriter, r *http.Request) {
+// 	response := make(map[string]string)
+// 	response["message"] = "Deleted TODO successfully"
+// 	render.JSON(w, r, response)
+// }

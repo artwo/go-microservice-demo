@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -18,25 +19,34 @@ func Routes() *chi.Mux {
 		middleware.Logger,
 		middleware.DefaultCompress,
 		middleware.RedirectSlashes,
+		middleware.RequestID,
+		middleware.RealIP,
 		middleware.Recoverer,
 	)
 
+	// Set a timeout value on the request context (ctx), that will signal
+	// through ctx.Done() that the request has timed out and further
+	// processing should be stopped.
+	router.Use(middleware.Timeout(60 * time.Second))
+
 	router.Route("/v1", func(r chi.Router) {
-		r.Mount("/api/todo", routehandler.Routes())
+		r.Mount("/people", routehandler.Routes())
 	})
 
 	return router
 }
 
 func main() {
-	router := Routes() 
+	log.Print("Starting API")
+	port := ":8080"
+	router := Routes()
 
 	walkFunc := func(
-			method string,
-			route string,
-			handler http.Handler,
-			middlewares ...func(http.Handler) http.Handler) error {
-		
+		method string,
+		route string,
+		handler http.Handler,
+		middlewares ...func(http.Handler) http.Handler) error {
+
 		log.Printf("%s %s\n", method, route)
 		return nil
 	}
@@ -45,5 +55,6 @@ func main() {
 		log.Panicf("Logging err: %s\n", err.Error())
 	}
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Print("API available at localhost" + port)
+	log.Fatal(http.ListenAndServe(port, router))
 }
