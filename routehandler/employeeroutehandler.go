@@ -75,24 +75,8 @@ func CreatePerson(w http.ResponseWriter, r *http.Request) {
 	response := make(map[string]string)
 	response["message"] = "Person created successfully"
 
-	// Method of JSON response 1
 	render.Status(r, http.StatusCreated)
 	render.JSON(w, r, response)
-
-	// Method of JSON response 2 doesn't work
-	//err = json.NewEncoder(w).Encode(response) // Doesn't work properly
-	//if err != nil {
-	//	log.Printf("Unable to Marshal response body: %s\n", err.Error())
-	//}
-
-	// Method of JSON response 3
-	//w.WriteHeader(http.StatusCreated)
-	//jsonString, err := json.Marshal(response)
-	//if err != nil {
-	//	log.Printf("Unable to Marshal response body: %s\n", err.Error())
-	//}
-	//w.Header().Set("Content-Type", "application/json")
-	//_, err = w.Write(jsonString)
 }
 
 // func DeleteTodo(w http.ResponseWriter, r *http.Request) {
