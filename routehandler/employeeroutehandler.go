@@ -5,7 +5,6 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	"log"
-	// "log"
 	"net/http"
 )
 
@@ -38,7 +37,7 @@ func Routes() *chi.Mux {
 	router := chi.NewRouter()
 	router.Get("/{personID}", GetPerson)
 	router.Post("/", CreatePerson)
-	// router.Delete("/{personID}", DeleteTodo)
+	router.Delete("/{personID}", DeletePerson)
 	router.Get("/", GetPeople)
 	return router
 }
@@ -79,8 +78,32 @@ func CreatePerson(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, response)
 }
 
-// func DeleteTodo(w http.ResponseWriter, r *http.Request) {
-// 	response := make(map[string]string)
-// 	response["message"] = "Deleted TODO successfully"
-// 	render.JSON(w, r, response)
-// }
+func DeletePerson(w http.ResponseWriter, r *http.Request) {
+	response := make(map[string]string)
+
+	personID := chi.URLParam(r, "personID")
+	for index, item := range people {
+		if item.ID == personID {
+			var person = people[index]
+			people = append(people[:index], people[index + 1:]...)
+			log.Printf("Deleted person " + toString(person))
+
+			response["message"] = "Person with ID '" + personID + "' deleted successfully"
+			log.Printf(response["message"])
+			render.JSON(w, r, response)
+			return
+		}
+	}
+
+	response["message"] = "Person with ID: '" + personID + "' not found"
+	render.Status(r, http.StatusNotFound)
+	render.JSON(w, r, response)
+}
+
+func toString(v interface{}) string {
+	out, err := json.Marshal(v)
+	if err != nil {
+		log.Printf("Unable to Marshal interface %T", v)
+	}
+	return string(out)
+}
