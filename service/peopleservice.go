@@ -27,8 +27,9 @@ type Address struct {
 var people []Person
 
 func init() {
-	people = append(people, Person{ID: "1", Firstname: "John", Lastname: "Doe", Address: &Address{City: "City X", State: "State X"}})
-	people = append(people, Person{ID: "2", Firstname: "Koko", Lastname: "Doe", Address: &Address{City: "City Z", State: "State Y"}})
+	people = append(people,
+		Person{ID: "1", Firstname: "John", Lastname: "Doe", Address: &Address{City: "City X", State: "State X"}},
+		Person{ID: "2", Firstname: "Koko", Lastname: "Doe", Address: &Address{City: "City Z", State: "State Y"}})
 	log.Printf(ToString(people))
 }
 
@@ -45,12 +46,12 @@ func GetPerson(personID string) Person {
 	return Person{}
 }
 
-func CreatePerson(newperson PersonReqBody) error {
+func CreatePerson(person PersonReqBody) error {
 	newPerson := Person{
 		ID:        "123",
-		Firstname: newperson.Firstname,
-		Lastname:  newperson.Lastname,
-		Address:   newperson.Address,
+		Firstname: person.Firstname,
+		Lastname:  person.Lastname,
+		Address:   person.Address,
 	}
 	people = append(people, newPerson)
 	return nil

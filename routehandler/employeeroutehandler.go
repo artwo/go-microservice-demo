@@ -64,7 +64,9 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 	err := service.DeletePerson(personID)
 	if err != nil {
 		log.Printf("Unable to find person with ID: %s\n", personID)
+		//TODO: render Errors with renderer
 		http.Error(w, "Person not found.", http.StatusNotFound)
+		return
 	}
 
 	response["message"] = "Person deleted successfully."
