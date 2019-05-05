@@ -1,6 +1,7 @@
 package routehandler
 
 import (
+	"chiapitest/models"
 	"chiapitest/service"
 	"encoding/json"
 	"github.com/go-chi/chi"
@@ -26,7 +27,7 @@ func getPeople(w http.ResponseWriter, r *http.Request) {
 func getPerson(w http.ResponseWriter, r *http.Request) {
 	personID := chi.URLParam(r, "personID")
 	person := service.GetPerson(personID)
-	if (person == service.Person{}) {
+	if (person == models.Person{}) {
 		log.Printf("Unable to find person with ID: %s\n", personID)
 		http.Error(w, "Person not found.", http.StatusNotFound)
 		return
@@ -35,8 +36,8 @@ func getPerson(w http.ResponseWriter, r *http.Request) {
 }
 
 func createPerson(w http.ResponseWriter, r *http.Request) {
-	var personBody service.PersonReqBody
-	err := json.NewDecoder(r.Body).Decode(&personBody)
+	var personRequest models.PersonRequest
+	err := json.NewDecoder(r.Body).Decode(&personRequest)
 	if err != nil {
 		//TODO: Pack log and error response in a function
 		log.Printf("Unable to parse CreatePerson request body: %s\n", err.Error())
@@ -44,7 +45,7 @@ func createPerson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = service.CreatePerson(personBody)
+	err = service.AddPerson(personRequest)
 	if err != nil {
 		log.Printf("Unable to store new person: %s\n", err.Error())
 		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
@@ -61,7 +62,7 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 	personID := chi.URLParam(r, "personID")
 	response := make(map[string]string)
 
-	err := service.DeletePerson(personID)
+	err := service.RemovePerson(personID)
 	if err != nil {
 		log.Printf("Unable to find person with ID: %s\n", personID)
 		//TODO: render Errors with renderer
@@ -69,6 +70,7 @@ func deletePerson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("Deleted person " + personID)
 	response["message"] = "Person deleted successfully."
 	render.JSON(w, r, response)
 }
