@@ -1,56 +1,55 @@
-package repos
+package repo
 
 import (
-	"chiapitest/models"
+	"chiapitest/model"
 	"chiapitest/utils"
 	"errors"
 	"log"
 )
 
-var people []models.Person
-
+var people []model.Person
 
 func init() {
 	people = append(
 		people,
-		models.Person{
-			ID: "2",
+		model.Person{
+			ID:        "2",
 			Firstname: "Koko",
-			Lastname: "Doe",
-			Address: &models.Address{
+			Lastname:  "Doe",
+			Address: &model.Address{
 				City: "City Z", State: "State Y"}},
-		models.Person{
-			ID: "1",
+		model.Person{
+			ID:        "1",
 			Firstname: "John",
-			Lastname: "Doe",
-			Address: &models.Address{
+			Lastname:  "Doe",
+			Address: &model.Address{
 				City: "City X", State: "State X"}})
 
 	log.Printf(utils.ToString(people))
 }
 
-func GetAllPeople() [] models.Person {
+func GetAllPeople() []model.Person {
 	return people
 }
 
-func FindPersonByID(ID string) models.Person {
+func FindPersonByID(ID string) model.Person {
 	for _, item := range people {
 		if item.ID == ID {
 			return item
 		}
 	}
-	return models.Person{}
+	return model.Person{}
 }
 
-func CreatePerson(person models.Person) error {
+func CreatePerson(person model.Person) error {
 	people = append(people, person)
 	return nil
 }
 
-func DeletePerson(person models.Person) error {
+func DeletePerson(person model.Person) error {
 	for index, item := range people {
 		if item.ID == person.ID {
-			people = append(people[:index], people[index + 1:]...)
+			people = append(people[:index], people[index+1:]...)
 			return nil
 		}
 	}

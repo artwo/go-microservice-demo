@@ -62,7 +62,6 @@ func main() {
 	log.Fatal(http.ListenAndServe(port, router))
 }
 
-
 const TRACE_HEADER = "X-Correlation-ID"
 
 func RequestTraceMiddleware(next http.Handler) http.Handler {

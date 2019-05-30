@@ -1,7 +1,7 @@
 package routehandler
 
 import (
-	"chiapitest/models"
+	"chiapitest/model"
 	"chiapitest/service"
 	"encoding/json"
 	"github.com/go-chi/chi"
@@ -27,7 +27,7 @@ func getPeople(w http.ResponseWriter, r *http.Request) {
 func getPerson(w http.ResponseWriter, r *http.Request) {
 	personID := chi.URLParam(r, "personID")
 	person := service.GetPerson(personID)
-	if (person == models.Person{}) {
+	if (person == model.Person{}) {
 		log.Printf("Unable to find person with ID: %s\n", personID)
 		http.Error(w, "Person not found.", http.StatusNotFound)
 		return
@@ -36,10 +36,9 @@ func getPerson(w http.ResponseWriter, r *http.Request) {
 }
 
 func createPerson(w http.ResponseWriter, r *http.Request) {
-	var personRequest models.PersonRequest
+	var personRequest model.PersonRequest
 	err := json.NewDecoder(r.Body).Decode(&personRequest)
 	if err != nil {
-		//TODO: Pack log and error response in a function
 		log.Printf("Unable to parse CreatePerson request body: %s\n", err.Error())
 		http.Error(w, "Wrong body format or element missing in body.", http.StatusBadRequest)
 		return

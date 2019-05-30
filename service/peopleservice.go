@@ -1,35 +1,35 @@
 package service
 
 import (
-	"chiapitest/models"
-	"chiapitest/repos"
+	"chiapitest/model"
+	"chiapitest/repo"
 	"errors"
 )
 
-func GetPeople() []models.Person {
-	return repos.GetAllPeople()
+func GetPeople() []model.Person {
+	return repo.GetAllPeople()
 }
 
-func GetPerson(personID string) models.Person {
-	return repos.FindPersonByID(personID)
+func GetPerson(personID string) model.Person {
+	return repo.FindPersonByID(personID)
 }
 
-func AddPerson(person models.PersonRequest) error {
-	newPerson := models.Person{
+func AddPerson(person model.PersonRequest) error {
+	newPerson := model.Person{
 		ID:        "123",
 		Firstname: person.Firstname,
 		Lastname:  person.Lastname,
 		Address:   person.Address,
 	}
-	err := repos.CreatePerson(newPerson)
+	err := repo.CreatePerson(newPerson)
 	return errors.New("Unable to create person error: '" + err.Error() + "'.")
 }
 
 func RemovePerson(personID string) error {
-	person := repos.FindPersonByID(personID)
-	if (person == models.Person{}) {
+	person := repo.FindPersonByID(personID)
+	if (person == model.Person{}) {
 		return errors.New("Unable to find person with ID '" + personID + "'")
 	}
 
-	return repos.DeletePerson(person)
+	return repo.DeletePerson(person)
 }
