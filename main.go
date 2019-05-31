@@ -9,10 +9,10 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
 
-	"chiapitest/routehandler"
+	"chiapitest/controller"
 )
 
-func Routes() *chi.Mux {
+func Routes(c *controller.Controller) *chi.Mux {
 	router := chi.NewRouter()
 	router.Use(
 		RequestTraceMiddleware,
@@ -32,17 +32,20 @@ func Routes() *chi.Mux {
 	router.Use(middleware.Timeout(60 * time.Second))
 
 	router.Route("/v1", func(r chi.Router) {
-		r.Mount("/people", routehandler.Routes())
+		r.Mount("/people", c.Routes())
 	})
 
 	return router
 }
 
 func main() {
-	log.SetPrefix("Hola ")
+	//log.SetPrefix("Hola ")
 	log.Print("Starting API")
 	port := ":8080"
-	router := Routes()
+
+	var c = controller.NewController()
+
+	router := Routes(c)
 
 	walkFunc := func(
 		method string,
