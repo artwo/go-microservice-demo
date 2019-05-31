@@ -7,7 +7,7 @@ type Person struct {
 	Address   *Address `json:"address,omitempty"`
 }
 
-type PersonRequest struct {
+type PersonNoID struct {
 	Firstname string   `json:"firstname"`
 	Lastname  string   `json:"lastname"`
 	Address   *Address `json:"address"`
