@@ -1,8 +1,10 @@
-package routehandler
+package controller
 
 import (
 	"chiapitest/model"
+	"chiapitest/repo"
 	"chiapitest/service"
+	"chiapitest/utils"
 	"encoding/json"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
@@ -10,23 +12,48 @@ import (
 	"net/http"
 )
 
-func Routes() *chi.Mux {
+type Controller struct {
+	PeopleRepo    repo.PeopleRepository
+	PeopleService service.PeopleService
+}
+
+func NewController() *Controller {
+	var peopleRepo = repo.NewInMemoryPeopleRepository()
+	log.Printf(utils.ToString(peopleRepo))
+
+	return &Controller{
+		peopleRepo,
+		service.NewPeopleService(peopleRepo),
+	}
+}
+
+func (c *Controller) Routes() *chi.Mux {
 	router := chi.NewRouter()
-	router.Get("/", getPeople)
-	router.Get("/{personID}", getPerson)
-	router.Post("/", createPerson)
-	router.Delete("/{personID}", deletePerson)
+	router.Get("/", c.getAllPeople)
+	router.Get("/{personID}", c.getPerson)
+	router.Post("/", c.postPerson)
+	router.Delete("/{personID}", c.deletePerson)
 	return router
 }
 
-func getPeople(w http.ResponseWriter, r *http.Request) {
-	people := service.GetPeople()
+func (c *Controller) getAllPeople(w http.ResponseWriter, r *http.Request) {
+	people, err := c.PeopleService.GetAllPeople()
+	if err != nil {
+		log.Printf("Unable to get all people: %s\n", err.Error())
+		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
+		return
+	}
 	render.JSON(w, r, people)
 }
 
-func getPerson(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) getPerson(w http.ResponseWriter, r *http.Request) {
 	personID := chi.URLParam(r, "personID")
-	person := service.GetPerson(personID)
+	person, err := c.PeopleService.GetPerson(personID)
+	if err != nil {
+		log.Printf("Unable to get person: %s\n", err.Error())
+		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
+		return
+	}
 	if (person == model.Person{}) {
 		log.Printf("Unable to find person with ID: %s\n", personID)
 		http.Error(w, "Person not found.", http.StatusNotFound)
@@ -35,8 +62,8 @@ func getPerson(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, person)
 }
 
-func createPerson(w http.ResponseWriter, r *http.Request) {
-	var personRequest model.PersonRequest
+func (c *Controller) postPerson(w http.ResponseWriter, r *http.Request) {
+	var personRequest model.PersonNoID
 	err := json.NewDecoder(r.Body).Decode(&personRequest)
 	if err != nil {
 		log.Printf("Unable to parse CreatePerson request body: %s\n", err.Error())
@@ -44,7 +71,7 @@ func createPerson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = service.AddPerson(personRequest)
+	err = c.PeopleService.AddPerson(personRequest)
 	if err != nil {
 		log.Printf("Unable to store new person: %s\n", err.Error())
 		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
@@ -57,11 +84,11 @@ func createPerson(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, response)
 }
 
-func deletePerson(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) deletePerson(w http.ResponseWriter, r *http.Request) {
 	personID := chi.URLParam(r, "personID")
 	response := make(map[string]string)
 
-	err := service.RemovePerson(personID)
+	err := c.PeopleService.RemovePerson(personID)
 	if err != nil {
 		log.Printf("Unable to find person with ID: %s\n", personID)
 		//TODO: render Errors with renderer
