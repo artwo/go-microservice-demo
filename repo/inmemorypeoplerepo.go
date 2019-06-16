@@ -29,11 +29,6 @@ func NewInMemoryPeopleRepository() PeopleRepository {
 	return &inMemoryPeopleRepository{people}
 }
 
-//func init() {
-//
-//	log.Printf(utils.ToString(people))
-//}
-
 func (i *inMemoryPeopleRepository) GetAll() ([]model.Person, error) {
 	return i.People, nil
 }
