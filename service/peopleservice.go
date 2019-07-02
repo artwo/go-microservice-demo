@@ -30,7 +30,7 @@ func (s *peopleService) AddPerson(person model.PersonNoID) error {
 		Address:   person.Address,
 	}
 	if err := s.PeopleRepo.Add(newPerson); err != nil {
-		return errors.New("Unable to create person error: '" + err.Error() + "'.")
+		return errors.New("Unable to create person error: '" + err.Error())
 	}
 	return nil
 }

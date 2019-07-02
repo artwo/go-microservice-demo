@@ -34,8 +34,8 @@ func TestGetAllPeople(t *testing.T) {
 
 	peopleRepoMock.AssertExpectations(t)
 	peopleRepoMock.AssertNumberOfCalls(t, "GetAll", 1)
-	assert.Equal(t, expectedPeople, result, "People data has changed.")
-	assert.Nil(t, err, "There is an unexpected error.")
+	assert.Equal(t, expectedPeople, result, "People data has changed")
+	assert.Nil(t, err, "There is an unexpected error")
 }
 
 func TestGetAllPeopleEmpty(t *testing.T) {
@@ -47,8 +47,8 @@ func TestGetAllPeopleEmpty(t *testing.T) {
 
 	peopleRepoMock.AssertExpectations(t)
 	peopleRepoMock.AssertNumberOfCalls(t, "GetAll", 1)
-	assert.Equal(t, []model.Person{}, result, "People data is not empty.")
-	assert.Nil(t, err, "There is an unexpected error.")
+	assert.Equal(t, []model.Person{}, result, "People data is not empty")
+	assert.Nil(t, err, "There is an unexpected error")
 }
 
 func TestGetPerson(t *testing.T) {
@@ -60,8 +60,8 @@ func TestGetPerson(t *testing.T) {
 
 	peopleRepoMock.AssertExpectations(t)
 	peopleRepoMock.AssertNumberOfCalls(t, "FindByID", 1)
-	assert.Equal(t, expectedPeople[1], result, "Incorrect person selected.")
-	assert.Nil(t, err, "There is an unexpected error.")
+	assert.Equal(t, expectedPeople[1], result, "Incorrect person selected")
+	assert.Nil(t, err, "There is an unexpected error")
 }
 
 func TestGetPersonNotFound(t *testing.T) {
@@ -73,8 +73,8 @@ func TestGetPersonNotFound(t *testing.T) {
 
 	peopleRepoMock.AssertExpectations(t)
 	peopleRepoMock.AssertNumberOfCalls(t, "FindByID", 1)
-	assert.Equal(t, model.Person{}, result, "This is not an empty person object.")
-	assert.Nil(t, err, "There is an unexpected error.")
+	assert.Equal(t, model.Person{}, result, "This is not an empty person object")
+	assert.Nil(t, err, "There is an unexpected error")
 }
 
 func TestRemovePerson(t *testing.T) {
@@ -88,7 +88,7 @@ func TestRemovePerson(t *testing.T) {
 	peopleRepoMock.AssertExpectations(t)
 	peopleRepoMock.AssertNumberOfCalls(t, "FindByID", 1)
 	peopleRepoMock.AssertNumberOfCalls(t, "Remove", 1)
-	assert.Nil(t, err, "There is an unexpected error.")
+	assert.Nil(t, err, "There is an unexpected error")
 }
 
 func TestRemovePersonNotFound(t *testing.T) {
@@ -102,7 +102,7 @@ func TestRemovePersonNotFound(t *testing.T) {
 	peopleRepoMock.AssertExpectations(t)
 	peopleRepoMock.AssertNumberOfCalls(t, "FindByID", 1)
 	peopleRepoMock.AssertNumberOfCalls(t, "Remove", 0)
-	assert.NotNil(t, err, "There was no expected error.")
+	assert.NotNil(t, err, "There was no expected error")
 }
 
 func TestAddPerson(t *testing.T) {
@@ -129,5 +129,5 @@ func TestAddPerson(t *testing.T) {
 
 	peopleRepoMock.AssertExpectations(t)
 	peopleRepoMock.AssertNumberOfCalls(t, "Add", 1)
-	assert.Nil(t, err, "There is an unexpected error.")
+	assert.Nil(t, err, "There is an unexpected error")
 }
