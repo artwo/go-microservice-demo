@@ -11,15 +11,15 @@ import (
 var expectedPeople = []model.Person{
 	{
 		ID:        "2",
-		Firstname: "Koko",
-		Lastname:  "Doe",
+		FirstName: "Koko",
+		LastName:  "Doe",
 		Address: &model.Address{
 			City: "City Z", State: "State Y"},
 	},
 	{
 		ID:        "1",
-		Firstname: "John",
-		Lastname:  "Doe",
+		FirstName: "John",
+		LastName:  "Doe",
 		Address: &model.Address{
 			City: "City X", State: "State X"},
 	},
@@ -108,8 +108,8 @@ func TestRemovePersonNotFound(t *testing.T) {
 func TestAddPerson(t *testing.T) {
 	peopleRepoMock := new(mock.PeopleRepoMock)
 	personNoID := model.PersonNoID{
-		Firstname: "John",
-		Lastname:  "Wick",
+		FirstName: "John",
+		LastName:  "Wick",
 		Address: &model.Address{
 			City:  "Merida",
 			State: "Merida",
@@ -119,8 +119,8 @@ func TestAddPerson(t *testing.T) {
 		"Add",
 		model.Person{
 			ID:        "123",
-			Firstname: personNoID.Firstname,
-			Lastname:  personNoID.Lastname,
+			FirstName: personNoID.FirstName,
+			LastName:  personNoID.LastName,
 			Address:   personNoID.Address,
 		}).Return(nil)
 
