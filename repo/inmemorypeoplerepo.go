@@ -15,14 +15,14 @@ func NewInMemoryPeopleRepository() PeopleRepository {
 		people,
 		model.Person{
 			ID:        "2",
-			Firstname: "Koko",
-			Lastname:  "Doe",
+			FirstName: "Koko",
+			LastName:  "Doe",
 			Address: &model.Address{
 				City: "City Z", State: "State Y"}},
 		model.Person{
 			ID:        "1",
-			Firstname: "John",
-			Lastname:  "Doe",
+			FirstName: "John",
+			LastName:  "Doe",
 			Address: &model.Address{
 				City: "City X", State: "State X"}})
 

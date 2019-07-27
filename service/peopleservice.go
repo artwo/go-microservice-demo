@@ -25,8 +25,8 @@ func (s *peopleService) GetPerson(personID string) (model.Person, error) {
 func (s *peopleService) AddPerson(person model.PersonNoID) error {
 	newPerson := model.Person{
 		ID:        "123",
-		Firstname: person.Firstname,
-		Lastname:  person.Lastname,
+		FirstName: person.FirstName,
+		LastName:  person.LastName,
 		Address:   person.Address,
 	}
 	if err := s.PeopleRepo.Add(newPerson); err != nil {
