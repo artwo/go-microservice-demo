@@ -55,6 +55,11 @@ func (c *Controller) GetAllPeople(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) GetPerson(w http.ResponseWriter, r *http.Request) {
 	personID := chi.URLParam(r, "personID")
+	if personID == "" {
+		http.Error(w, "Request path parameter personID is missing", http.StatusBadRequest)
+		return
+	}
+
 	person, err := c.PeopleService.GetPerson(personID)
 	if err != nil {
 		log.Printf("Unable to get person: %s\n", err.Error())
@@ -77,6 +82,11 @@ func (c *Controller) PostPerson(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Wrong body format or element missing in body", http.StatusBadRequest)
 		return
 	}
+	if errs := personRequest.Validate(); len(errs) > 0 {
+		log.Printf("Request with invalid body\n")
+		http.Error(w, "Wrong body format or element missing in body", http.StatusBadRequest)
+		return
+	}
 
 	err = c.PeopleService.AddPerson(personRequest)
 	if err != nil {
@@ -93,8 +103,12 @@ func (c *Controller) PostPerson(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) DeletePerson(w http.ResponseWriter, r *http.Request) {
 	personID := chi.URLParam(r, "personID")
-	response := make(map[string]string)
+	if personID == "" {
+		http.Error(w, "Request path parameter personID is missing", http.StatusBadRequest)
+		return
+	}
 
+	response := make(map[string]string)
 	err := c.PeopleService.RemovePerson(personID)
 	if err != nil {
 		log.Printf("Unable to find person with ID: %s\n", personID)
