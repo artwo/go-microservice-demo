@@ -7,14 +7,21 @@ import (
 	"chiapitest/utils"
 	"encoding/json"
 	"github.com/go-chi/chi"
-	"github.com/go-chi/render"
+	"github.com/unrolled/render"
 	"log"
 	"net/http"
 )
 
 type Controller struct {
+	*render.Render
 	PeopleRepo    repo.PeopleRepository
 	PeopleService service.PeopleService
+}
+
+func newJsonRender() *render.Render {
+	return render.New(render.Options{
+		IndentJSON: true,
+	})
 }
 
 func NewController() *Controller {
@@ -22,6 +29,7 @@ func NewController() *Controller {
 	log.Printf(utils.ToString(peopleRepo))
 
 	return &Controller{
+		newJsonRender(),
 		peopleRepo,
 		service.NewPeopleService(peopleRepo),
 	}
@@ -29,6 +37,7 @@ func NewController() *Controller {
 
 func NewTestController(peopleRepo repo.PeopleRepository, peopleService service.PeopleService) *Controller {
 	return &Controller{
+		newJsonRender(),
 		peopleRepo,
 		peopleService,
 	}
@@ -50,7 +59,7 @@ func (c *Controller) GetAllPeople(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Something went wrong", http.StatusInternalServerError)
 		return
 	}
-	render.JSON(w, r, people)
+	_ = c.JSON(w, http.StatusOK, people)
 }
 
 func (c *Controller) GetPerson(w http.ResponseWriter, r *http.Request) {
@@ -71,7 +80,7 @@ func (c *Controller) GetPerson(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Person not found", http.StatusNotFound)
 		return
 	}
-	render.JSON(w, r, person)
+	_ = c.JSON(w, http.StatusOK, person)
 }
 
 func (c *Controller) PostPerson(w http.ResponseWriter, r *http.Request) {
@@ -97,8 +106,7 @@ func (c *Controller) PostPerson(w http.ResponseWriter, r *http.Request) {
 
 	response := make(map[string]string)
 	response["message"] = "Person created successfully"
-	render.Status(r, http.StatusCreated)
-	render.JSON(w, r, response)
+	_ = c.JSON(w, http.StatusCreated, response)
 }
 
 func (c *Controller) DeletePerson(w http.ResponseWriter, r *http.Request) {
@@ -119,5 +127,5 @@ func (c *Controller) DeletePerson(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Deleted person " + personID)
 	response["message"] = "Person deleted successfully"
-	render.JSON(w, r, response)
+	_ = c.JSON(w, http.StatusOK, response)
 }
