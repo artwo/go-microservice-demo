@@ -7,7 +7,7 @@ import (
 )
 
 func ToString(v interface{}) string {
-	out, err := json.Marshal(v)
+	out, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
 		log.Printf("Unable to Marshal interface %T", v)
 	}
